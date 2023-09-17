@@ -1,8 +1,7 @@
-import math
 import arcade
 
-screen_width = 640
-screen_height = 480
+screen_width = 1024
+screen_height = 768
 game_title = 'Dark Matter'
 
 class Player(arcade.Sprite):
@@ -12,8 +11,11 @@ class Player(arcade.Sprite):
         self.center_x = screen_width / 2
         self.center_y = screen_height / 2
         self.z = 0
-        self.move_speed = 6.5
-        self.scale = 2
+        self.scale = 1
+        # movement traits
+        self.max_speed = 3.0
+        self.acceleration_rate = 0.1
+        self.friction = 0.02
 
     def update(self):
         # set movement
@@ -23,33 +25,31 @@ class Player(arcade.Sprite):
         # set boundaries
         if self.right > screen_width:
             self.right = screen_width
+            self.change_x = 0 # Zero x speed
         elif self.left < 0:
             self.left = 0
+            self.change_x = 0
         if self.bottom < 0:
             self.bottom = 0
+            self.change_y = 0
         elif self.top > screen_height:
             self.top = screen_height
+            self.change_y = 0
 
-class GamePlay(arcade.Window):
+class MyGame(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         self.set_mouse_visible(False)
         self.set_location(int((arcade.get_display_size()[0] - screen_width) / 2),
                           int((arcade.get_display_size()[1] - screen_height) / 2))
-        # set movement keys, arrow keys or WSAD
-        self.move_keys = {
-            arcade.key.UP: (0, 1),
-            arcade.key.DOWN: (0, -1),
-            arcade.key.W: (0, 1),
-            arcade.key.S: (0, -1),
-            arcade.key.LEFT: (-1, 0),
-            arcade.key.RIGHT: (1, 0),
-            arcade.key.A: (-1, 0),
-            arcade.key.D: (1, 0)
-        }
-        self.setup_game()  # call the setup/new game function
+        # idle at start
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
+        self.setup()  # call the setup/new game function
 
-    def setup_game(self):
+    def setup(self):
         self.player = Player()
 
     def on_draw(self):
@@ -59,28 +59,62 @@ class GamePlay(arcade.Window):
     def update(self, delta_time):
         self.player.update()
 
+        # Add friction
+        if self.player.change_x > self.player.friction:
+            self.player.change_x -= self.player.friction
+        elif self.player.change_x < -self.player.friction:
+            self.player.change_x += self.player.friction
+        else:
+            self.player.change_x = 0
+
+        if self.player.change_y > self.player.friction:
+            self.player.change_y -= self.player.friction
+        elif self.player.change_y < -self.player.friction:
+            self.player.change_y += self.player.friction
+        else:
+            self.player.change_y = 0
+
+        # Apply acceleration based on the keys pressed
+        if self.up_pressed and not self.down_pressed:
+            self.player.change_y += self.player.acceleration_rate
+        elif self.down_pressed and not self.up_pressed:
+            self.player.change_y += -self.player.acceleration_rate
+        if self.left_pressed and not self.right_pressed:
+            self.player.change_x += -self.player.acceleration_rate
+        elif self.right_pressed and not self.left_pressed:
+            self.player.change_x += self.player.acceleration_rate
+
+        if self.player.change_x > self.player.max_speed:
+            self.player.change_x = self.player.max_speed
+        elif self.player.change_x < -self.player.max_speed:
+            self.player.change_x = -self.player.max_speed
+        if self.player.change_y > self.player.max_speed:
+            self.player.change_y = self.player.max_speed
+        elif self.player.change_y < -self.player.max_speed:
+            self.player.change_y = -self.player.max_speed
+
     def on_key_press(self, key, modifiers):
-        if key in self.move_keys:
-            x_dir, y_dir = self.move_keys[key]
-            diagonal_speed = self.player.move_speed / math.sqrt(
-                2)  # approximate diagonal movement speed to cardinal movement
-            self.player.change_x += x_dir * diagonal_speed
-            self.player.change_y += y_dir * diagonal_speed
+        if key == arcade.key.W:
+            self.up_pressed = True
+        elif key == arcade.key.S:
+            self.down_pressed = True
+        elif key == arcade.key.A:
+            self.left_pressed = True
+        elif key == arcade.key.D:
+            self.right_pressed = True
 
     def on_key_release(self, key, modifiers):
-        if key in self.move_keys:
-            x_dir, y_dir = self.move_keys[key]
-            diagonal_speed = self.player.move_speed / math.sqrt(
-                2)  # approximate diagonal movement speed to cardinal movement
-            if self.player.change_x == x_dir * diagonal_speed and (
-                    y_dir == 0 or self.player.change_y == y_dir * diagonal_speed):
-                self.player.change_x = 0
-            if self.player.change_y == y_dir * diagonal_speed and (
-                    x_dir == 0 or self.player.change_x == x_dir * diagonal_speed):
-                self.player.change_y = 0
+        if key == arcade.key.W:
+            self.up_pressed = False
+        elif key == arcade.key.S:
+            self.down_pressed = False
+        elif key == arcade.key.A:
+            self.left_pressed = False
+        elif key == arcade.key.D:
+            self.right_pressed = False
 
 def main():
-    game = GamePlay(screen_width, screen_height, game_title)
+    game = MyGame(screen_width, screen_height, game_title)
     arcade.run()
 
 if __name__ == '__main__':
