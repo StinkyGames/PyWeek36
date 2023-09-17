@@ -1,5 +1,5 @@
 import arcade
-import player as player
+from player import Player
 
 screen_width = 1024
 screen_height = 768
@@ -19,7 +19,7 @@ class MyGame(arcade.Window):
         self.setup()  # call the setup/new game function
 
     def setup(self):
-        self.player = Player()
+        self.player = Player(screen_width, screen_height)
 
     def on_draw(self):
         arcade.start_render()
