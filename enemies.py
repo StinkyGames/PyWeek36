@@ -21,7 +21,7 @@ class Enemy(arcade.Sprite):
 class Drone(Enemy):
     def __init__(self, health, speed):
         Enemy.__init__(self, health, speed)
-        arcade.Sprite.__init__(self, "Sprites/player2.png", 1.0)
+        arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_green.png", 0.7)
 
     def __str__(self):
         return f"Drone: {self.health}, {self.spritepath}, {self.speed}"
