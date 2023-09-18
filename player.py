@@ -3,7 +3,7 @@ import arcade
 class Player(arcade.Sprite):
     def __init__(self, screen_width, screen_height):
         super().__init__('sprites/player.png')
-        # set initial values
+        # set initial orientation values
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.center_x = screen_width / 2
@@ -14,6 +14,8 @@ class Player(arcade.Sprite):
         self.max_speed = 3.0
         self.acceleration_rate = 0.1
         self.friction = 0.02
+        # stats
+        self.hull = 10
 
     def update(self):
         # set movement

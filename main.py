@@ -1,5 +1,7 @@
 import arcade
+import random
 from player import Player
+from enemies import Drone
 
 screen_width = 1024
 screen_height = 768
@@ -20,13 +22,36 @@ class MyGame(arcade.Window):
 
     def setup(self):
         self.player = Player(screen_width, screen_height)
+        self.enemy_list = arcade.SpriteList()
+
+        for i in range(0, 10):
+            drone = Drone(10, 1)
+            drone.center_x = random.randrange(screen_width)
+            drone.center_y = random.randrange(screen_height)
+
+            self.enemy_list.append(drone)
 
     def on_draw(self):
         arcade.start_render()
+        self.clear()
+        self.enemy_list.draw()
         self.player.draw()
 
     def update(self, delta_time):
         self.player.update()
+        self.enemy_list.update()
+
+        for enemy in self.enemy_list:
+            enemy.follow_sprite(self.player)
+
+        hit_list = arcade.check_for_collision_with_list(self.player, self.enemy_list)
+
+        for enemy in hit_list:
+            enemy.remove_from_sprite_lists()
+            self.player.hull -= 1
+
+        if self.player.hull == 0:
+            arcade.close_window()
 
         # Add friction
         if self.player.change_x > self.player.friction:
@@ -84,6 +109,7 @@ class MyGame(arcade.Window):
 
 def main():
     game = MyGame(screen_width, screen_height, game_title)
+    game.setup()
     arcade.run()
 
 if __name__ == '__main__':
