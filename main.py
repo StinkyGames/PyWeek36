@@ -1,7 +1,7 @@
 import arcade
 import random
-from player import Player
-from enemies import Drone
+from Data.player import Player
+from Data.drones import Drone
 
 screen_width = 1024
 screen_height = 768

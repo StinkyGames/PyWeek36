@@ -8,9 +8,16 @@ if sys.version_info[:2] < min_ver:
     )
 
 try:
+    import arcade
+except:
+    sys.exit(
+        'Arcade is required to run'
+    )
+
+try:
     import main
 except:
     sys.exit(
-        'main.py could not be located'
+        'Your installation is corrupt'
     )
 main.main()

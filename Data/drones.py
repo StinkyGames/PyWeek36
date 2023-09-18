@@ -25,37 +25,3 @@ class Drone(Enemy):
     def __str__(self):
         return f"Drone: {self.health}, {self.spritepath}, {self.speed}"
     
-#Reaver boss
-class Reaver(Enemy):
-    def __init__(self, health, spritepath, speed):
-        Enemy.__init__(self, health, spritepath, speed)
-
-    def __str__(self):
-        return f"Reaver: {self.health}, {self.spritepath}, {self.speed}"
-
-#Onslaught boss    
-class Onslaught(Enemy):
-    def __init__(self, health, spritepath, speed):
-        Enemy.__init__(self, health, spritepath, speed)
-
-    def __str__(self):
-        return f"Onslaught: {self.health}, {self.spritepath}, {self.speed}"
-
-#Bulwark boss
-class Bulwark(Enemy):
-    def __init__(self, health, spritepath, speed):
-        Enemy.__init__(self, health, spritepath, speed)
-
-    def __str__(self):
-        return f"Bulwark: {self.health}, {self.spritepath}, {self.speed}"
-
-#Sunbeam boss
-class Sunbeam(Enemy):
-    def __init__(self, health, spritepath, speed):
-        Enemy.__init__(self, health, spritepath, speed)
-
-    def __str__(self):
-        return f"Sunbeam: {self.health}, {self.spritepath}, {self.speed}"
-
-
-
