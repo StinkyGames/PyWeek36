@@ -74,9 +74,9 @@ class MyGame(arcade.Window):
         elif self.down_pressed and not self.up_pressed:
             self.player.change_y += -self.player.acceleration_rate
         if self.left_pressed and not self.right_pressed:
-            self.player.change_x += -self.player.acceleration_rate
+            self.player.turn_move += -1
         elif self.right_pressed and not self.left_pressed:
-            self.player.change_x += self.player.acceleration_rate
+            self.player.turn_move += 1
 
         if self.player.change_x > self.player.max_speed:
             self.player.change_x = self.player.max_speed
