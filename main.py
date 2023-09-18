@@ -50,7 +50,7 @@ class MyGame(arcade.Window):
             enemy.remove_from_sprite_lists()
             self.player.hull -= 1
 
-        if self.player.hull == 0:
+        if self.player.hull == -1: # god mode
             arcade.close_window()
 
         # Add friction
