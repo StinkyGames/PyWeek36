@@ -168,3 +168,6 @@ class GameView(arcade.View):
             self.left_pressed = False
         elif key == arcade.key.D:
             self.right_pressed = False
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.player.face_point((x,y))

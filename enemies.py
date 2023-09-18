@@ -15,12 +15,13 @@ class Enemy(arcade.Sprite):
             self.center_x += min(self.speed, player_sprite.center_x - self.center_x)
         elif self.center_x > player_sprite.center_x:
             self.center_x -= min(self.speed, self.center_x - player_sprite.center_x)
+        self.face_point((player_sprite.center_x, player_sprite.center_y))
 
 #Generic drone enemy
 class Drone(Enemy):
     def __init__(self, health, speed):
         Enemy.__init__(self, health, speed)
-        arcade.Sprite.__init__(self, "Sprites/player.png", 0.2)
+        arcade.Sprite.__init__(self, "Sprites/player2.png", 1.0)
 
     def __str__(self):
         return f"Drone: {self.health}, {self.spritepath}, {self.speed}"

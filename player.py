@@ -2,7 +2,7 @@ import arcade
 
 class Player(arcade.Sprite):
     def __init__(self, screen_width, screen_height):
-        super().__init__('sprites/player.png')
+        super().__init__('sprites/player2.png')
         # set initial orientation values
         self.screen_width = screen_width
         self.screen_height = screen_height
