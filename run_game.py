@@ -1,4 +1,5 @@
 import sys
+from Data import main
 
 # check python version requirement
 min_ver = (3, 7)
@@ -15,7 +16,7 @@ except:
     )
 
 try:
-    import main
+    from Data import main
 except:
     sys.exit(
         'Your installation is corrupt'
