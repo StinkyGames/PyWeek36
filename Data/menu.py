@@ -10,6 +10,10 @@ class MenuView(arcade.View):
         self.window.set_mouse_visible(True)
         self.window.set_location(int((arcade.get_display_size()[0] - screen_width) / 2),
                           int((arcade.get_display_size()[1] - screen_height) / 2))
+        
+        self.background = arcade.load_texture('Assets/Starfield_02-1024x1024.png')
+        self.bg_music = arcade.load_sound(':resources:music/1918.mp3')
+        self.bg_music_player = None
 
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -44,7 +48,7 @@ class MenuView(arcade.View):
 
         self.v_box = arcade.gui.UIBoxLayout(space_between=20)
 
-        title_label = arcade.gui.UILabel(text="Dark Matter", width=400, height=50, font_size=18, font_name=("calibri", "arial"), text_color=arcade.color.BLACK, align="center")
+        title_label = arcade.gui.UILabel(text="Dark Matter", width=400, height=50, font_size=18, font_name=("calibri", "arial"), text_color=arcade.color.WHITE, align="center")
         start_button = arcade.gui.UIFlatButton(text="Start", width=200, style=red_style)
         exit_button = arcade.gui.UIFlatButton(text="Exit", width=200, style=red_style)
 
@@ -57,6 +61,9 @@ class MenuView(arcade.View):
 
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x", anchor_y="center_y", child=self.v_box))
 
+    def on_hide_view(self):
+        self.manager.disable()
+
     def on_click_start(self, event):
         instructions_view = InstructionsView(self.screen_width, self.screen_height)
         self.window.show_view(instructions_view)
@@ -66,4 +73,11 @@ class MenuView(arcade.View):
 
     def on_draw(self):
         self.clear()
+        arcade.draw_texture_rectangle(
+            self.screen_width // 2, self.screen_height // 2,
+            self.screen_width, self.screen_height,
+            self.background
+        )
+        if not self.bg_music_player or not self.bg_music_player.playing:
+                self.bg_music_player = arcade.play_sound(self.bg_music, .2)
         self.manager.draw()

@@ -1,10 +1,9 @@
 import arcade, arcade.gui
-from .game import GameView
 
-class InstructionsView(arcade.View):
+class GameOverView(arcade.View):
     def __init__(self, screen_width, screen_height):
         super().__init__()
-
+        
         self.screen_width = screen_width
         self.screen_height = screen_height
 
@@ -16,7 +15,7 @@ class InstructionsView(arcade.View):
         self.manager.enable()
 
     def on_show_view(self):
-        arcade.set_background_color(arcade.color.ORANGE_PEEL)
+        arcade.set_background_color(arcade.color.BLACK)
 
         red_style = {
             "font_name": ("calibri", "arial"),
@@ -32,23 +31,30 @@ class InstructionsView(arcade.View):
 
         self.v_box = arcade.gui.UIBoxLayout(space_between=20)
 
-        title_label = arcade.gui.UILabel(text="Instructions", width=400, height=50, font_size=18, font_name=("calibri", "arial"), text_color=arcade.color.BLACK, align="center")
-        begin_button = arcade.gui.UIFlatButton(text="Begin", width=200, style=red_style)
+        title_label = arcade.gui.UILabel(text="Game Over", width=400, height=50, font_size=18, font_name=("calibri", "arial"), text_color=arcade.color.WHITE, align="center")
+        restart_button = arcade.gui.UIFlatButton(text="Restart", width=200, style=red_style)
+        exit_button = arcade.gui.UIFlatButton(text="Exit", width=200, style=red_style)
 
-        begin_button.on_click = self.on_click_begin
+        restart_button.on_click = self.on_click_restart
+        exit_button.on_click = self.on_click_exit
 
         self.v_box.add(title_label)
-        self.v_box.add(begin_button)
+        self.v_box.add(restart_button)
+        self.v_box.add(exit_button)
 
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x", anchor_y="center_y", child=self.v_box))
 
     def on_hide_view(self):
         self.manager.disable()
 
-    def on_click_begin(self, event):
-        game_view = GameView(self.screen_width, self.screen_height)
-        self.window.show_view(game_view)
-
     def on_draw(self):
         self.clear()
         self.manager.draw()
+
+    def on_click_restart(self, event):
+        from .game import GameView
+        game_view = GameView(self.screen_width, self.screen_height)
+        self.window.show_view(game_view)
+
+    def on_click_exit(self, event):
+        arcade.close_window()
