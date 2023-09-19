@@ -2,7 +2,7 @@ import arcade
 
 class Player(arcade.Sprite):
     def __init__(self, screen_width, screen_height):
-        super().__init__('sprites/player.png')
+        super().__init__(":resources:images/space_shooter/playerShip2_orange.png")
         # set initial orientation values
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -35,4 +35,3 @@ class Player(arcade.Sprite):
         elif self.top > self.screen_height:
             self.top = self.screen_height
             self.change_y = 0
-            
