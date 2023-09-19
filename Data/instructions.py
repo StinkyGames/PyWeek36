@@ -42,6 +42,9 @@ class InstructionsView(arcade.View):
 
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x", anchor_y="center_y", child=self.v_box))
 
+    def on_hide_view(self):
+        self.manager.disable()
+
     def on_click_begin(self, event):
         game_view = GameView(self.screen_width, self.screen_height)
         self.window.show_view(game_view)
