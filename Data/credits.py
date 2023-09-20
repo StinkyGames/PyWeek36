@@ -1,6 +1,6 @@
 import arcade, arcade.gui
 
-class InstructionsView(arcade.View):
+class CreditsView(arcade.View):
     def __init__(self, screen_width, screen_height):
         super().__init__()
         self.screen_width = screen_width
@@ -54,12 +54,12 @@ class InstructionsView(arcade.View):
             self.background
         )
         self.manager.draw()
-        instructions_text = [
-            "WSAD to move.",
-            "Left click for primary attack.",
-            "Placeholder"
+        credits_text = [
+            "Programmed by Steven Finnell and Harrison Wallace.",
+            "Built-In resources provided by the Arcade module.",
+            "Other assets used credit to XXX"
         ]
         y = 500
-        for line in instructions_text:
+        for line in credits_text:
             arcade.draw_text(line, 300, y, arcade.color.WHITE, 14)
             y -= 20  # Adjust the vertical position for the next line

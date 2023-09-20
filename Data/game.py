@@ -1,18 +1,18 @@
 import arcade, arcade.gui, random, math
-from .gameover import GameOverView
 from .player import *
 from .enemies import *
+from .level_select import *
 
 class GameView(arcade.View):
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, boss):
         super().__init__()
         self.window.set_mouse_visible(True)
         self.window.set_location(int((arcade.get_display_size()[0] - screen_width) / 2),
                           int((arcade.get_display_size()[1] - screen_height) / 2))
         self.screen_width = screen_width
         self.screen_height = screen_height
-
-        self.background = arcade.load_texture('Assets/Purple_Nebula_03-1024x1024.png')
+        self.boss = boss
+        self.background = arcade.load_texture(f'Assets/{self.boss}.png')
 
         self.left_pressed = False
         self.right_pressed = False
@@ -25,6 +25,7 @@ class GameView(arcade.View):
         self.player = Player(self.screen_width, self.screen_height)
         self.enemy_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
+        self.level = LevelSelectView(self.screen_width, self.screen_height)
 
         for i in range(0, 10):
             self.drone = Drone(10, 1)
@@ -48,6 +49,9 @@ class GameView(arcade.View):
         hull_display = f"Hull: {self.player.hull}"
         arcade.draw_text(hull_display, 10, 30, arcade.color.WHITE, 14)
 
+        boss_display = f"Boss: {self.boss}"
+        arcade.draw_text(boss_display, self.screen_width - 200, 30, arcade.color.WHITE, 14)
+
     def on_update(self, delta_time):
         self.player.update()
         self.enemy_list.update()
@@ -70,6 +74,7 @@ class GameView(arcade.View):
             self.player.hull -= 1
 
         if self.player.hull == 0:
+            from .gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
@@ -122,6 +127,7 @@ class GameView(arcade.View):
             self.right_pressed = True
         # for easy restart - can remove from final release
         if key == arcade.key.X:
+            from .gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
