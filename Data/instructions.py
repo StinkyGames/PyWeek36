@@ -1,10 +1,8 @@
 import arcade, arcade.gui
-from Views.game import GameView
 
 class InstructionsView(arcade.View):
     def __init__(self, screen_width, screen_height):
         super().__init__()
-
         self.screen_width = screen_width
         self.screen_height = screen_height
 
@@ -15,9 +13,9 @@ class InstructionsView(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
-    def on_show_view(self):
-        arcade.set_background_color(arcade.color.ORANGE_PEEL)
+        self.background = arcade.load_texture('Assets/Menu.png')
 
+    def on_show_view(self):
         red_style = {
             "font_name": ("calibri", "arial"),
             "font_size": 15,
@@ -32,20 +30,36 @@ class InstructionsView(arcade.View):
 
         self.v_box = arcade.gui.UIBoxLayout(space_between=20)
 
-        title_label = arcade.gui.UILabel(text="Instructions", width=400, height=50, font_size=18, font_name=("calibri", "arial"), text_color=arcade.color.BLACK, align="center")
-        begin_button = arcade.gui.UIFlatButton(text="Begin", width=200, style=red_style)
+        continue_button = arcade.gui.UIFlatButton(text="Continue", width=200, style=red_style)
 
-        begin_button.on_click = self.on_click_begin
+        continue_button.on_click = self.on_click_continue
 
-        self.v_box.add(title_label)
-        self.v_box.add(begin_button)
+        self.v_box.add(continue_button)
 
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x", anchor_y="center_y", child=self.v_box))
 
-    def on_click_begin(self, event):
-        game_view = GameView(self.screen_width, self.screen_height)
-        self.window.show_view(game_view)
+    def on_hide_view(self):
+        self.manager.disable()
+
+    def on_click_continue(self, event):
+        from level_select import LevelSelectView
+        level_view = LevelSelectView(self.screen_width, self.screen_height)
+        self.window.show_view(level_view)
 
     def on_draw(self):
         self.clear()
+        arcade.draw_texture_rectangle(
+            self.screen_width // 2, self.screen_height // 2,
+            self.screen_width, self.screen_height,
+            self.background
+        )
         self.manager.draw()
+        instructions_text = [
+            "WSAD to move.",
+            "Left click for primary attack.",
+            "Placeholder"
+        ]
+        y = 500
+        for line in instructions_text:
+            arcade.draw_text(line, 300, y, arcade.color.WHITE, 14)
+            y -= 20  # Adjust the vertical position for the next line
