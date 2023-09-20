@@ -1,7 +1,7 @@
 import arcade
 
 class Player(arcade.Sprite):
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, physics_engine):
         super().__init__(':resources:images/space_shooter/playerShip2_orange.png')
         # set initial orientation values
         self.screen_width = screen_width
@@ -75,8 +75,9 @@ class Player(arcade.Sprite):
         self.physics_engine.sprites[self].body.position = (self.center_x, self.center_y)
 
 class Bullet(arcade.Sprite):
-    def __init__(self):
+    def __init__(self, shadertoy):
         super().__init__(':resources:images/space_shooter/laserRed01.png')
         # set initial values
         self.speed = 10
         self.scale = 1
+        self.shadertoy = shadertoy

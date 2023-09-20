@@ -1,8 +1,10 @@
 import arcade, arcade.gui, random, math
-from player import *
-from enemies import *
-from level_select import *
+from .player import *
+from .enemies import *
+from .level_select import *
+from .laser import Laser
 from arcade.pymunk_physics_engine import PymunkPhysicsEngine
+from arcade.experimental.shadertoy import Shadertoy
 
 class GameView(arcade.View):
     def __init__(self, screen_width, screen_height, boss):
@@ -22,6 +24,8 @@ class GameView(arcade.View):
 
         self.mouse_x = (int)(self.screen_width / 2)
         self.mouse_y = self.screen_height
+
+        self.laser_shadertoy = Shadertoy.create_from_file(self.window.get_size(), "Shaders/laser.glsl")
 
         self.setup()
 
@@ -93,7 +97,7 @@ class GameView(arcade.View):
             self.player.hull -= 1
 
         if self.player.hull == 0:
-            from gameover import GameOverView
+            from .gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
@@ -112,7 +116,7 @@ class GameView(arcade.View):
             self.right_pressed = True
          # for easy restart - can remove from final release
         if key == arcade.key.X:
-            from gameover import GameOverView
+            from .gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
@@ -131,7 +135,7 @@ class GameView(arcade.View):
         self.mouse_y = y
 
     def on_mouse_press(self, x, y, button, modifiers):
-        self.bullet = Bullet()
+        self.bullet = Laser(glowcolor=(64, 255, 64), shadertoy=self.laser_shadertoy, player=self.player)
         self.bullet.center_x = self.player.center_x
         self.bullet.center_y = self.player.center_y
         # the math for where and how the bullets shoot
