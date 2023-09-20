@@ -58,22 +58,22 @@ class LevelSelectView(arcade.View):
         self.manager.disable()
 
     def on_click_onslaught(self, event):
-        from game import GameView
+        from .game import GameView
         game_view = GameView(self.screen_width, self.screen_height, boss="Onslaught")
         self.window.show_view(game_view)
     
     def on_click_reaver(self, event):
-        from game import GameView
+        from .game import GameView
         game_view = GameView(self.screen_width, self.screen_height, boss="Reaver")
         self.window.show_view(game_view)
     
     def on_click_bulwark(self, event):
-        from game import GameView
+        from .game import GameView
         game_view = GameView(self.screen_width, self.screen_height,boss="Bulwark")
         self.window.show_view(game_view)
 
     def on_click_sunbeam(self, event):
-        from game import GameView
+        from .game import GameView
         game_view = GameView(self.screen_width, self.screen_height,boss="Sunbeam")
         self.window.show_view(game_view)
     

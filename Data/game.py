@@ -1,7 +1,8 @@
 import arcade, arcade.gui, random, math
-from player import *
-from enemies import *
-from level_select import *
+from .player import *
+from .enemies import *
+from .level_select import *
+from .explosion import ExplosionMaker
 from arcade.pymunk_physics_engine import PymunkPhysicsEngine
 
 class GameView(arcade.View):
@@ -22,6 +23,8 @@ class GameView(arcade.View):
 
         self.mouse_x = (int)(self.screen_width / 2)
         self.mouse_y = self.screen_height
+
+        self.explosion_list = []
 
         self.setup()
 
@@ -64,6 +67,9 @@ class GameView(arcade.View):
         self.enemy_list.draw()
         self.bullet_list.draw()
 
+        for explosion in self.explosion_list:
+            explosion.render()
+
         hull_display = f"Hull: {self.player.hull}"
         arcade.draw_text(hull_display, 10, 30, arcade.color.WHITE, 14)
 
@@ -83,8 +89,14 @@ class GameView(arcade.View):
         for bullet in self.bullet_list:
             drone_hit = arcade.check_for_collision_with_list(bullet, self.enemy_list)
             for enemy in drone_hit:
+                self.explosion_list.append(ExplosionMaker(self.window.get_size(), enemy.position))
                 enemy.remove_from_sprite_lists()
                 bullet.remove_from_sprite_lists()
+
+        for explosion in self.explosion_list:
+            explosion.update(delta_time)
+            if explosion.time > .9:
+                self.explosion_list.remove(explosion)
 
         hit_list = arcade.check_for_collision_with_list(self.player, self.enemy_list)
 
@@ -93,7 +105,7 @@ class GameView(arcade.View):
             self.player.hull -= 1
 
         if self.player.hull == 0:
-            from gameover import GameOverView
+            from .gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
@@ -112,7 +124,7 @@ class GameView(arcade.View):
             self.right_pressed = True
          # for easy restart - can remove from final release
         if key == arcade.key.X:
-            from gameover import GameOverView
+            from .gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
