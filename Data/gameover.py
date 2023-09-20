@@ -52,9 +52,9 @@ class GameOverView(arcade.View):
         self.manager.draw()
 
     def on_click_restart(self, event):
-        from .game import GameView
-        game_view = GameView(self.screen_width, self.screen_height)
-        self.window.show_view(game_view)
+        from .level_select import LevelSelectView
+        level_view = LevelSelectView(self.screen_width, self.screen_height)
+        self.window.show_view(level_view)
 
     def on_click_exit(self, event):
         arcade.close_window()
