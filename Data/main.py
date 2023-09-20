@@ -1,6 +1,6 @@
 
 import arcade
-from .menu import MenuView
+from menu import MenuView
 
 screen_width = 1024
 screen_height = 768
