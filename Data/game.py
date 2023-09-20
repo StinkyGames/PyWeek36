@@ -7,7 +7,7 @@ from arcade.pymunk_physics_engine import PymunkPhysicsEngine
 class GameView(arcade.View):
     def __init__(self, screen_width, screen_height, boss):
         super().__init__()
-        self.window.set_mouse_visible(False)
+        self.window.set_mouse_visible(True)
         self.window.set_location(int((arcade.get_display_size()[0] - screen_width) / 2),
                           int((arcade.get_display_size()[1] - screen_height) / 2))
         self.screen_width = screen_width
@@ -84,7 +84,6 @@ class GameView(arcade.View):
             drone_hit = arcade.check_for_collision_with_list(bullet, self.enemy_list)
             for enemy in drone_hit:
                 enemy.remove_from_sprite_lists()
-                #self.physics_engine.remove_sprite(enemy)
                 bullet.remove_from_sprite_lists()
 
         hit_list = arcade.check_for_collision_with_list(self.player, self.enemy_list)
