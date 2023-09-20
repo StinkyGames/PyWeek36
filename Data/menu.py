@@ -70,17 +70,17 @@ class MenuView(arcade.View):
         self.manager.disable()
 
     def on_click_start(self, event):
-        from .level_select import LevelSelectView
+        from level_select import LevelSelectView
         level_view = LevelSelectView(self.screen_width, self.screen_height)
         self.window.show_view(level_view)
     
     def on_click_instructions(self, event):
-        from .instructions import InstructionsView
+        from instructions import InstructionsView
         instructions_view = InstructionsView(self.screen_width, self.screen_height)
         self.window.show_view(instructions_view)
 
     def on_click_credits(self, event):
-        from .credits import CreditsView
+        from credits import CreditsView
         credits_view = CreditsView(self.screen_width, self.screen_height)
         self.window.show_view(credits_view)
 

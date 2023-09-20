@@ -42,7 +42,7 @@ class CreditsView(arcade.View):
         self.manager.disable()
 
     def on_click_continue(self, event):
-        from .level_select import LevelSelectView
+        from level_select import LevelSelectView
         level_view = LevelSelectView(self.screen_width, self.screen_height)
         self.window.show_view(level_view)
 

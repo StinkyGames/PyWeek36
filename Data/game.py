@@ -1,7 +1,8 @@
 import arcade, arcade.gui, random, math
-from .player import *
-from .enemies import *
-from .level_select import *
+from player import *
+from enemies import *
+from level_select import *
+from arcade.pymunk_physics_engine import PymunkPhysicsEngine
 
 class GameView(arcade.View):
     def __init__(self, screen_width, screen_height, boss):
@@ -19,20 +20,37 @@ class GameView(arcade.View):
         self.up_pressed = False
         self.down_pressed = False
 
+        self.mouse_x = (int)(self.screen_width / 2)
+        self.mouse_y = self.screen_height
+
         self.setup()
 
     def setup(self):
-        self.player = Player(self.screen_width, self.screen_height)
         self.enemy_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
         self.level = LevelSelectView(self.screen_width, self.screen_height)
 
-        for i in range(0, 10):
-            self.drone = Drone(10, 1)
-            self.drone.center_x = random.randrange(self.screen_width)
-            self.drone.center_y = random.randrange(self.screen_height)
+        damping = 0.5
+        gravity = (0, 0)
+        self.physics_engine = PymunkPhysicsEngine(damping=damping, gravity=gravity)
 
-            self.enemy_list.append(self.drone)
+        self.player = Player(self.screen_width, self.screen_height, self.physics_engine)
+
+        for i in range(10):
+            drone = Drone(10, 1, self.physics_engine)
+            drone.center_x = random.randrange(self.screen_width)
+            drone.center_y = random.randrange(self.screen_height)
+            self.enemy_list.append(drone)
+
+        #Found this code at https://api.arcade.academy/en/latest/examples/pymunk_demo_top_down.html#pymunk-demo-top-down
+
+        # def enemy_enemy_hit_handler(sprite_a, sprite_b, arbiter, space, data):
+        #     shape = arbiter.shapes[0]
+        #     sprite = self.physics_engine.get_sprite_for_shape(shape)
+
+        # self.physics_engine.add_collision_handler("enemy", "enemy", post_handler=enemy_enemy_hit_handler)
+        self.physics_engine.add_sprite(self.player, collision_type="player")
+        self.physics_engine.add_sprite_list(self.enemy_list, collision_type="enemy")
 
     def on_draw(self):
         self.clear()
@@ -53,12 +71,13 @@ class GameView(arcade.View):
         arcade.draw_text(boss_display, self.screen_width - 200, 30, arcade.color.WHITE, 14)
 
     def on_update(self, delta_time):
-        self.player.update()
-        self.enemy_list.update()
+        self.physics_engine.step()
         self.bullet_list.update()
+        self.player.move(self.up_pressed, self.down_pressed, self.left_pressed, self.right_pressed)
+        self.player.face_point((self.mouse_x, self.mouse_y))
 
         for enemy in self.enemy_list:
-            enemy.follow_sprite(self.player)
+            enemy.move(self.player)
 
         # Bullets kill drones
         for bullet in self.bullet_list:
@@ -74,47 +93,13 @@ class GameView(arcade.View):
             self.player.hull -= 1
 
         if self.player.hull == 0:
-            from .gameover import GameOverView
+            from gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
         for self.bullet in self.bullet_list:
             if self.bullet.bottom > self.screen_width or self.bullet.top < 0 or self.bullet.right < 0 or self.bullet.left > self.screen_width:
                 self.bullet.remove_from_sprite_lists()
-
-        # Add friction
-        if self.player.change_x > self.player.friction:
-            self.player.change_x -= self.player.friction
-        elif self.player.change_x < -self.player.friction:
-            self.player.change_x += self.player.friction
-        else:
-            self.player.change_x = 0
-
-        if self.player.change_y > self.player.friction:
-            self.player.change_y -= self.player.friction
-        elif self.player.change_y < -self.player.friction:
-            self.player.change_y += self.player.friction
-        else:
-            self.player.change_y = 0
-
-        # Apply acceleration based on the keys pressed
-        if self.up_pressed and not self.down_pressed:
-            self.player.change_y += self.player.acceleration_rate
-        elif self.down_pressed and not self.up_pressed:
-            self.player.change_y += -self.player.acceleration_rate
-        if self.left_pressed and not self.right_pressed:
-            self.player.change_x += -self.player.acceleration_rate
-        elif self.right_pressed and not self.left_pressed:
-            self.player.change_x += self.player.acceleration_rate
-
-        if self.player.change_x > self.player.max_speed:
-            self.player.change_x = self.player.max_speed
-        elif self.player.change_x < -self.player.max_speed:
-            self.player.change_x = -self.player.max_speed
-        if self.player.change_y > self.player.max_speed:
-            self.player.change_y = self.player.max_speed
-        elif self.player.change_y < -self.player.max_speed:
-            self.player.change_y = -self.player.max_speed
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.W:
@@ -125,9 +110,9 @@ class GameView(arcade.View):
             self.left_pressed = True
         elif key == arcade.key.D:
             self.right_pressed = True
-        # for easy restart - can remove from final release
+         # for easy restart - can remove from final release
         if key == arcade.key.X:
-            from .gameover import GameOverView
+            from gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
@@ -142,8 +127,9 @@ class GameView(arcade.View):
             self.right_pressed = False
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.player.face_point((x,y))
-    
+        self.mouse_x = x
+        self.mouse_y = y
+
     def on_mouse_press(self, x, y, button, modifiers):
         self.bullet = Bullet()
         self.bullet.center_x = self.player.center_x
