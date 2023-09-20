@@ -1,7 +1,7 @@
 import arcade
 
 class Player(arcade.Sprite):
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, physics_engine):
         super().__init__(':resources:images/space_shooter/playerShip2_orange.png')
         # set initial orientation values
         self.screen_width = screen_width
