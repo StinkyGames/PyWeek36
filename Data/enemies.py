@@ -38,6 +38,7 @@ class Reaver(Enemy):
 
         self.physics_engine = physics_engine
 
+    # Just put in the default enemy behavior code as a placeholder
     def move(self, player_sprite):
         if self.center_y < player_sprite.center_y:
             self.center_y += min(self.speed, player_sprite.center_y - self.center_y)
