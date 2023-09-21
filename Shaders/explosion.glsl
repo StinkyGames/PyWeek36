@@ -12,9 +12,9 @@ const float MAX_PARTICLE_DISTANCE = 0.3;
 // Size of each particle. Normalized.
 const float PARTICLE_SIZE = 0.004;
 // Time for each burst cycle, in seconds.
-const float BURST_TIME = 1.5;
+const float BURST_TIME = 1.0;
 // Particle brightness
-const float DEFAULT_BRIGHTNESS = 0.0005;
+const float DEFAULT_BRIGHTNESS = 0.0002;
 
 const float TWOPI = 6.2832;
 
