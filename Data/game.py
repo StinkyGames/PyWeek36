@@ -16,8 +16,6 @@ class GameView(arcade.View):
         self.boss = boss
         self.background = arcade.load_texture(f'Assets/{self.boss}.png')
         self.shoot_sound = arcade.load_sound(':resources:sounds/laser1.wav')
-        self.enemy_hit_sound = arcade.load_sound(':resources:sounds/hurt4.wav')
-        self.player_hit_sound = arcade.load_sound(':resources:sounds/hurt1.wav')
 
         self.left_pressed = False
         self.right_pressed = False
@@ -28,19 +26,21 @@ class GameView(arcade.View):
         self.mouse_y = self.screen_height
 
         self.explosion_list = []
+        self.num_enemies_spawned = 0
 
         self.setup()
 
     def setup(self):
         self.enemy_list = arcade.SpriteList()
+        self.enemy_bullet_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
         self.level = LevelSelectView(self.screen_width, self.screen_height)
 
         self.spawn_timer = 0  # Timer to control drone spawning
-        self.spawn_interval = 3  # Time in seconds between drone spawns
+        self.spawn_interval = 1  # Time in seconds between drone spawns
         self.kill_count = 0
         self.max_kills = 25
-        self.boss_spawn = True
+        self.boss_spawned = False
         
         damping = 0.5
         gravity = (0, 0)
@@ -51,25 +51,20 @@ class GameView(arcade.View):
         if self.boss == "Bulwark":
             self.boss_class = Bulwark(100, 1, self.physics_engine)
         elif self.boss == "Reaver":
-            self.boss_class = Reaver(100, 1, self.physics_engine)
+            self.boss_class = Reaver(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
         elif self.boss == "Onslaught":
             self.boss_class = Onslaught(100, 1, self.physics_engine)
         elif self.boss == "Sunbeam":
             self.boss_class = Sunbeam(100, 1, self.physics_engine)
 
         for i in range(10):
-            drone = Drone(10, 1, self.physics_engine)
+            drone = Drone(1, 1, self.physics_engine)
             drone.center_x = random.randrange(self.screen_width)
             drone.center_y = random.randrange(self.screen_height)
             self.enemy_list.append(drone)
+            self.num_enemies_spawned += 1
 
         #Found this code at https://api.arcade.academy/en/latest/examples/pymunk_demo_top_down.html#pymunk-demo-top-down
-
-        # def enemy_enemy_hit_handler(sprite_a, sprite_b, arbiter, space, data):
-        #     shape = arbiter.shapes[0]
-        #     sprite = self.physics_engine.get_sprite_for_shape(shape)
-
-        # self.physics_engine.add_collision_handler("enemy", "enemy", post_handler=enemy_enemy_hit_handler)
         self.physics_engine.add_sprite(self.player, collision_type="player")
         self.physics_engine.add_sprite_list(self.enemy_list, collision_type="enemy")
 
@@ -83,6 +78,7 @@ class GameView(arcade.View):
 
         self.player.draw()
         self.enemy_list.draw()
+        self.enemy_bullet_list.draw()
         self.bullet_list.draw()
 
         for explosion in self.explosion_list:
@@ -101,50 +97,62 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         self.physics_engine.step()
         self.bullet_list.update()
+        self.enemy_bullet_list.update()
         self.enemy_list.update()
-        self.player.move(self.up_pressed, self.down_pressed, self.left_pressed, self.right_pressed)
-        self.player.face_point((self.mouse_x, self.mouse_y))
+        self.player.move(self.up_pressed, self.down_pressed, self.left_pressed, self.right_pressed, self.mouse_x, self.mouse_y)
 
         # Spawn boss
-        if self.kill_count >= self.max_kills and self.boss_spawn:
-            self.boss_spawn = False
+        if self.kill_count >= self.max_kills and not self.boss_spawned:
+            self.boss_spawned = True
             self.spawn_boss()
 
         # Spawn drones over time
         self.spawn_timer += delta_time
-        if self.spawn_timer >= self.spawn_interval and self.kill_count <= self.max_kills:
-            for i in range(10):
-                drone = Drone(10, 1, self.physics_engine)
-                #Define edges of screen
-                edge = random.choice(["top", "bottom", "left", "right"])
-                if edge == "top":
-                    drone.center_x = random.randrange(self.screen_width)
-                    drone.center_y = self.screen_height
-                elif edge == "bottom":
-                    drone.center_x = random.randrange(self.screen_width)
-                    drone.center_y = 0
-                elif edge == "left":
-                    drone.center_x = 0
-                    drone.center_y = random.randrange(self.screen_height)
-                elif edge == "right":
-                    drone.center_x = self.screen_width
-                    drone.center_y = random.randrange(self.screen_height)
-                self.enemy_list.append(drone)
-                self.spawn_timer = 0  # Reset the timer
-                self.physics_engine.add_sprite(drone, collision_type="enemy")
+        if self.spawn_timer >= self.spawn_interval and self.num_enemies_spawned < self.max_kills:
+            drone = Drone(1, 1, self.physics_engine)
+            #Define edges of screen
+            edge = random.choice(["top", "bottom", "left", "right"])
+            if edge == "top":
+                drone.center_x = random.randrange(self.screen_width)
+                drone.center_y = self.screen_height
+            elif edge == "bottom":
+                drone.center_x = random.randrange(self.screen_width)
+                drone.center_y = 0
+            elif edge == "left":
+                drone.center_x = 0
+                drone.center_y = random.randrange(self.screen_height)
+            elif edge == "right":
+                drone.center_x = self.screen_width
+                drone.center_y = random.randrange(self.screen_height)
+            self.enemy_list.append(drone)
+            self.num_enemies_spawned += 1
+            self.spawn_timer = 0  # Reset the timer
+            self.physics_engine.add_sprite(drone, collision_type="enemy")
 
         for enemy in self.enemy_list:
-            enemy.move(self.player)
+            enemy.move(self.player, delta_time)
 
         # Bullets kill drones
         for bullet in self.bullet_list:
             drone_hit = arcade.check_for_collision_with_list(bullet, self.enemy_list)
             for enemy in drone_hit:
-                self.explosion_list.append(ExplosionMaker(self.window.get_size(), enemy.position))
-                arcade.play_sound(self.enemy_hit_sound)
-                enemy.remove_from_sprite_lists()
+                enemy.health -= 1
+                if enemy.health <= 0:
+                    arcade.play_sound(enemy.death_sound)
+                    enemy.remove_from_sprite_lists()
+                    self.explosion_list.append(ExplosionMaker(self.window.get_size(), enemy.position))
+                    self.kill_count += 1
+                else:
+                    arcade.play_sound(enemy.hit_sound)
                 bullet.remove_from_sprite_lists()
-                self.kill_count += 1
+
+        # Enemy bullets hurt player
+        for bullet in self.enemy_bullet_list:
+            player_hit = arcade.check_for_collision(bullet, self.player)
+            if player_hit:
+                arcade.play_sound(self.player.hit_sound)
+                self.player.hull -= 1
+                bullet.remove_from_sprite_lists()
 
         for explosion in self.explosion_list:
             explosion.update(delta_time)
@@ -154,18 +162,32 @@ class GameView(arcade.View):
         hit_list = arcade.check_for_collision_with_list(self.player, self.enemy_list)
 
         for enemy in hit_list:
-            arcade.play_sound(self.player_hit_sound)
-            enemy.remove_from_sprite_lists()
-            self.player.hull -= 1
+            if isinstance(enemy, Drone):
+                enemy.health -= 1
+                self.player.hull -= 1
+                if enemy.health <= 0:
+                    arcade.play_sound(enemy.death_sound)
+                    enemy.remove_from_sprite_lists()
+                    self.explosion_list.append(ExplosionMaker(self.window.get_size(), enemy.position))
+                    self.kill_count += 1
+                else:
+                    arcade.play_sound(enemy.hit_sound)
+            else:
+                self.player.hull = 0
 
         if self.player.hull == 0:
+            arcade.play_sound(self.player.death_sound)
             from .gameover import GameOverView
             game_over_view = GameOverView(self.screen_width, self.screen_height)
             self.window.show_view(game_over_view)
 
-        for self.bullet in self.bullet_list:
-            if self.bullet.bottom > self.screen_width or self.bullet.top < 0 or self.bullet.right < 0 or self.bullet.left > self.screen_width:
-                self.bullet.remove_from_sprite_lists()
+        for bullet in self.bullet_list:
+            if bullet.bottom > self.screen_width or bullet.top < 0 or bullet.right < 0 or bullet.left > self.screen_width:
+                bullet.remove_from_sprite_lists()
+
+        for bullet in self.enemy_bullet_list:
+            if bullet.bottom > self.screen_width or bullet.top < 0 or bullet.right < 0 or bullet.left > self.screen_width:
+                bullet.remove_from_sprite_lists()
 
     def spawn_boss(self):
         boss = self.boss_class
@@ -206,15 +228,15 @@ class GameView(arcade.View):
         self.mouse_y = y
 
     def on_mouse_press(self, x, y, button, modifiers):
-        self.bullet = Bullet()
-        self.bullet.center_x = self.player.center_x
-        self.bullet.center_y = self.player.center_y
+        bullet = Bullet()
+        bullet.center_x = self.player.center_x
+        bullet.center_y = self.player.center_y
         # the math for where and how the bullets shoot
         x_diff = x - self.player.center_x
         y_diff = y - self.player.center_y
         angle = math.atan2(y_diff, x_diff)
-        self.bullet.angle = self.player.angle
-        self.bullet.change_x = math.cos(angle) * self.bullet.speed
-        self.bullet.change_y = math.sin(angle) * self.bullet.speed
-        self.bullet_list.append(self.bullet)
+        bullet.angle = self.player.angle
+        bullet.change_x = math.cos(angle) * bullet.speed
+        bullet.change_y = math.sin(angle) * bullet.speed
+        self.bullet_list.append(bullet)
         arcade.play_sound(self.shoot_sound)
