@@ -166,7 +166,7 @@ class GameView(arcade.View):
                 enemy.health -= 1
                 self.player.hull -= 1
                 if enemy.health <= 0:
-                    arcade.play_sound(enemy.death_sound)
+                    arcade.play_sound(self.player.hit_sound)
                     enemy.remove_from_sprite_lists()
                     self.explosion_list.append(ExplosionMaker(self.window.get_size(), enemy.position))
                     self.kill_count += 1
