@@ -156,17 +156,82 @@ class Reaver(Enemy):
 
 #Onslaught boss    
 class Onslaught(Enemy):
-    def __init__(self, health, speed, physics_engine):
+    def __init__(self, health, speed, physics_engine, screen_width, screen_height, enemy_bullet_list):
         Enemy.__init__(self, health, speed, physics_engine)
         arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_green.png", 1.3)
 
         self.physics_engine = physics_engine
-
+        self.screen_width = screen_width
+        self.scree_height = screen_height
         self.hit_sound = arcade.load_sound(':resources:sounds/hit1.wav')
         self.death_sound = arcade.load_sound(':resources:sounds/explosion2.wav')
 
-    def move(self, player_sprite, timer):
-        print("No movement")
+        position_offset = 100
+
+        self.move_point_incrementor = 0
+
+        self.enemy_bullet_list = enemy_bullet_list
+
+        self.shoot_interval = 0.8
+        self.shoot_timer = 0
+        self.shoot_sound = arcade.load_sound(':resources:sounds/laser2.wav')
+
+        self.move_points = [
+            [0 + position_offset, screen_height - position_offset], #Top left
+            [screen_width - position_offset, screen_height - position_offset] #Top right
+        ]
+
+    def move(self, player_sprite, time):
+        # Position the start at the enemy's current location
+        start_x = self.center_x
+        start_y = self.center_y
+
+        # Get the destination location for the bullet
+        dest_x = player_sprite.center_x
+        dest_y = player_sprite.center_y
+
+        # Do math to calculate how to get the bullet to the destination.
+        # Calculation the angle in radians between the start points
+        # and end points. This is the angle the bullet will travel.
+        x_diff = dest_x - start_x
+        y_diff = dest_y - start_y
+        angle = math.atan2(y_diff, x_diff)
+
+        # Set the enemy to face the player.
+        self.angle = math.degrees(angle) - 90
+
+        if self.center_y < self.move_points[self.move_point_incrementor][1]:
+            self.center_y += min(self.speed, self.move_points[self.move_point_incrementor][1] - self.center_y)
+        elif self.center_y > self.move_points[self.move_point_incrementor][1]:
+            self.center_y -= min(self.speed, self.center_y - self.move_points[self.move_point_incrementor][1])
+        if self.center_x < self.move_points[self.move_point_incrementor][0]:
+            self.center_x += min(self.speed, self.move_points[self.move_point_incrementor][0] - self.center_x)
+        elif self.center_x > self.move_points[self.move_point_incrementor][0]:
+            self.center_x -= min(self.speed, self.center_x - self.move_points[self.move_point_incrementor][0])
+
+        #If we reached the destination, reverse to other point
+        if self.center_x == self.move_points[self.move_point_incrementor][0]:
+            if self.move_point_incrementor == 1:
+                self.move_point_incrementor = 0
+            else:
+                self.move_point_incrementor = 1
+
+        self.shoot_timer += time
+        if self.shoot_timer >= self.shoot_interval:
+            bullet = Bullet()
+            bullet.center_x = start_x
+            bullet.center_y = start_y
+            bullet.angle = math.degrees(angle)
+            bullet.angle = self.angle
+            bullet.change_x = math.cos(angle) * bullet.speed
+            bullet.change_y = math.sin(angle) * bullet.speed
+            self.enemy_bullet_list.append(bullet)
+            arcade.play_sound(self.shoot_sound)
+            self.shoot_timer = 0
+            self.shoot_delay = 0
+
+        self.physics_engine.sprites[self].body.position = (self.center_x, self.center_y)
+        self.physics_engine.sprites[self].body.angle = self.angle
 
 
 #Bulwark boss

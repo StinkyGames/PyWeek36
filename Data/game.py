@@ -52,7 +52,7 @@ class GameView(arcade.View):
         elif self.boss == "Reaver":
             self.boss_class = Reaver(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
         elif self.boss == "Onslaught":
-            self.boss_class = Onslaught(10, 1, self.physics_engine)
+            self.boss_class = Onslaught(10, 5, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
         elif self.boss == "Sunbeam":
             self.boss_class = Sunbeam(10, 1, self.physics_engine)
 
