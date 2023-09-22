@@ -110,6 +110,15 @@ class GameView(arcade.View):
             self.boss_spawned = True
             self.spawn_boss()
 
+        # Check if boss dies
+        if self.boss_spawned:
+            if self.boss_class.health <= 0:
+                from .level_select import LevelSelectView
+                from . import values
+                values.hide_boss.append(self.boss)
+                level_select_view = LevelSelectView(self.screen_width, self.screen_height, values.hide_boss)
+                self.window.show_view(level_select_view)
+
         # Spawn drones over time
         self.spawn_timer += delta_time
         if self.spawn_timer >= self.spawn_interval and self.num_enemies_spawned < self.max_kills:
