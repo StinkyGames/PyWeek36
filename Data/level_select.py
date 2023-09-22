@@ -50,6 +50,7 @@ class LevelSelectView(arcade.View):
         self.v_box.add(reaver_button)
         self.v_box.add(bulwark_button)
         self.v_box.add(sunbeam_button)
+        # Remove boss choices if they exist in the dictionary that is defined from game.py when killing a boss
         from . import values
         if "Onslaught" in values.hide_boss:
             self.v_box.remove(onslaught_button)
@@ -60,7 +61,7 @@ class LevelSelectView(arcade.View):
         if "Sunbeam" in values.hide_boss:
             self.v_box.remove(sunbeam_button)
         self.v_box.add(exit_button)
-
+        # Take you to the winner screen if all boss names exist in the dictionary
         if all(boss in values.hide_boss for boss in ["Onslaught", "Reaver", "Bulwark", "Sunbeam"]):
             from .winner import WinView
             win_view = WinView(self.screen_width, self.screen_height)

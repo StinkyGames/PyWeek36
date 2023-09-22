@@ -38,7 +38,7 @@ class GameView(arcade.View):
         self.spawn_timer = 0  # Timer to control drone spawning
         self.spawn_interval = 1  # Time in seconds between drone spawns
         self.kill_count = 0
-        self.max_kills = 25
+        self.max_kills = 5
         self.boss_spawned = False
         
         damping = 0.5
@@ -48,7 +48,7 @@ class GameView(arcade.View):
         self.player = Player(self.screen_width, self.screen_height, self.physics_engine)
 
         if self.boss == "Bulwark":
-            self.boss_class = Bulwark(100, 1, self.physics_engine)
+            self.boss_class = Bulwark(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
         elif self.boss == "Reaver":
             self.boss_class = Reaver(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
             self.boss_class.circle_center_x = self.screen_width / 2
@@ -56,9 +56,9 @@ class GameView(arcade.View):
             self.boss_class.circle_radius = self.screen_width / 2 - 200
             self.boss_class.circle_angle = (self.screen_width / 2 - 100) * 2 * math.pi
         elif self.boss == "Onslaught":
-            self.boss_class = Onslaught(100, 1, self.physics_engine)
+            self.boss_class = Onslaught(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
         elif self.boss == "Sunbeam":
-            self.boss_class = Sunbeam(100, 1, self.physics_engine)
+            self.boss_class = Sunbeam(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
 
         for i in range(10):
             drone = Drone(1, 1, self.physics_engine)
@@ -114,7 +114,7 @@ class GameView(arcade.View):
             if self.boss_class.health <= 0:
                 from .level_select import LevelSelectView
                 from . import values
-                values.hide_boss.append(self.boss)
+                values.hide_boss.append(self.boss) # Add boss name to a dictionary to remove it from level select
                 level_select_view = LevelSelectView(self.screen_width, self.screen_height, values.hide_boss)
                 self.window.show_view(level_select_view)
 
