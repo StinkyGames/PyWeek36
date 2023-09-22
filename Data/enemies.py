@@ -67,25 +67,26 @@ class Reaver(Enemy):
 
         self.jump_interval = 7 #Time in seconds between jump to cardinal points
         self.jump_timer = 0
-        self.jump_point_incrementor = 0
+        self.move_point_incrementor = 0
 
         self.hit_sound = arcade.load_sound(':resources:sounds/hit1.wav')
         self.death_sound = arcade.load_sound(':resources:sounds/explosion2.wav')
 
-        self.jump_sound = arcade.load_sound(':resources:sounds/fall3.wav')
-        self.jump_points = [
-            [screen_width/2, screen_height - position_offset], #North
-            [screen_width - position_offset, screen_height/2], #East
-            [screen_width/2, 0 + position_offset], #South
-            [0 + position_offset, screen_height/2]  #West
+        self.move_points = [
+            [screen_width/2, screen_height - position_offset],
+            [screen_width - position_offset, screen_height/2],
+            [screen_width/2, 0 + position_offset],
+            [0 + position_offset, screen_height/2]
         ]
+
+        self.jump_sound = arcade.load_sound(':resources:sounds/fall3.wav')
 
         self.shoot_interval = 1
         self.shoot_timer = 0
         self.shoot_delay = 0 #Number used to delay the enmy from shooting for certain reasons (i.e. jumping)  
 
         self.shoot_sound = arcade.load_sound(':resources:sounds/laser2.wav')
-        self.test_angle = 0
+
     # Just put in the default enemy behavior code as a placeholder
     def move(self, player_sprite, time):
         # Position the start at the enemy's current location
@@ -106,17 +107,38 @@ class Reaver(Enemy):
         # Set the enemy to face the player.
         self.angle = math.degrees(angle) - 90
 
+        if self.center_y < self.move_points[self.move_point_incrementor][1]:
+            self.center_y += min(self.speed, self.move_points[self.move_point_incrementor][1] - self.center_y)
+        elif self.center_y > self.move_points[self.move_point_incrementor][1]:
+            self.center_y -= min(self.speed, self.center_y - self.move_points[self.move_point_incrementor][1])
+        if self.center_x < self.move_points[self.move_point_incrementor][0]:
+            self.center_x += min(self.speed, self.move_points[self.move_point_incrementor][0] - self.center_x)
+        elif self.center_x > self.move_points[self.move_point_incrementor][0]:
+            self.center_x -= min(self.speed, self.center_x - self.move_points[self.move_point_incrementor][0])
+
         self.jump_timer += time
-        self.shoot_timer += time
         if self.jump_timer >= self.jump_interval:
-            if(self.jump_point_incrementor == 3):
-                self.jump_point_incrementor = 0
-            self.center_x = self.jump_points[self.jump_point_incrementor][0] #Set new x
-            self.center_y = self.jump_points[self.jump_point_incrementor][1] #Set new y
+            if(self.move_point_incrementor == 0):
+                self.center_x = self.move_points[2][0] #Set new x
+                self.center_y = self.move_points[2][1] #Set new y
+                self.move_point_incrementor += 1
+            elif(self.move_point_incrementor == 1):
+                self.center_x = self.move_points[3][0] #Set new x
+                self.center_y = self.move_points[3][1] #Set new y
+                self.move_point_incrementor += 1
+            elif(self.move_point_incrementor == 2):
+                self.center_x = self.move_points[0][0] #Set new x
+                self.center_y = self.move_points[0][1] #Set new y
+                self.move_point_incrementor += 1
+            elif(self.move_point_incrementor == 3):
+                self.center_x = self.move_points[1][0] #Set new x
+                self.center_y = self.move_points[1][1] #Set new y
+                self.move_point_incrementor = 0
             arcade.play_sound(self.jump_sound)
-            self.jump_point_incrementor += 1
             self.jump_timer = 0 #Reset timer
             self.shoot_delay = 1 #Add delay to shooting to let the player adjust
+
+        self.shoot_timer += time
         if self.shoot_timer >= self.shoot_interval + self.shoot_delay:
             bullet = Bullet()
             bullet.center_x = start_x
@@ -129,6 +151,7 @@ class Reaver(Enemy):
             arcade.play_sound(self.shoot_sound)
             self.shoot_timer = 0
             self.shoot_delay = 0
+            
         self.physics_engine.sprites[self].body.position = (self.center_x, self.center_y)
         self.physics_engine.sprites[self].body.angle = self.angle
 

@@ -52,6 +52,10 @@ class GameView(arcade.View):
             self.boss_class = Bulwark(100, 1, self.physics_engine)
         elif self.boss == "Reaver":
             self.boss_class = Reaver(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
+            self.boss_class.circle_center_x = self.screen_width / 2
+            self.boss_class.circle_center_y = self.screen_height / 2
+            self.boss_class.circle_radius = self.screen_width / 2 - 200
+            self.boss_class.circle_angle = (self.screen_width / 2 - 100) * 2 * math.pi
         elif self.boss == "Onslaught":
             self.boss_class = Onslaught(100, 1, self.physics_engine)
         elif self.boss == "Sunbeam":
