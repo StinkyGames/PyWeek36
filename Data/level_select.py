@@ -61,6 +61,11 @@ class LevelSelectView(arcade.View):
             self.v_box.remove(sunbeam_button)
         self.v_box.add(exit_button)
 
+        if all(boss in values.hide_boss for boss in ["Onslaught", "Reaver", "Bulwark", "Sunbeam"]):
+            from .winner import WinView
+            win_view = WinView(self.screen_width, self.screen_height)
+            self.window.show_view(win_view)
+
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x", anchor_y="center_y", child=self.v_box))
 
     def on_hide_view(self):
