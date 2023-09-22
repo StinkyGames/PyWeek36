@@ -1,8 +1,9 @@
 import arcade, arcade.gui
 
-class CreditsView(arcade.View):
+class WinView(arcade.View):
     def __init__(self, screen_width, screen_height):
         super().__init__()
+        
         self.screen_width = screen_width
         self.screen_height = screen_height
 
@@ -13,9 +14,9 @@ class CreditsView(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
-        self.background = arcade.load_texture('Assets/Menu.png')
-
     def on_show_view(self):
+        arcade.set_background_color(arcade.color.BLACK)
+
         red_style = {
             "font_name": ("calibri", "arial"),
             "font_size": 15,
@@ -30,36 +31,32 @@ class CreditsView(arcade.View):
 
         self.v_box = arcade.gui.UIBoxLayout(space_between=20)
 
-        continue_button = arcade.gui.UIFlatButton(text="Continue", width=200, style=red_style)
+        title_label = arcade.gui.UILabel(text="You Are Winner!", width=400, height=50, font_size=18, font_name=("calibri", "arial"), text_color=arcade.color.WHITE, align="center")
+        restart_button = arcade.gui.UIFlatButton(text="Restart", width=200, style=red_style)
+        exit_button = arcade.gui.UIFlatButton(text="Exit", width=200, style=red_style)
 
-        continue_button.on_click = self.on_click_continue
+        restart_button.on_click = self.on_click_restart
+        exit_button.on_click = self.on_click_exit
 
-        self.v_box.add(continue_button)
+        self.v_box.add(title_label)
+        self.v_box.add(restart_button)
+        self.v_box.add(exit_button)
 
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x", anchor_y="center_y", child=self.v_box))
 
     def on_hide_view(self):
         self.manager.disable()
 
-    def on_click_continue(self, event):
-        from .level_select import LevelSelectView
-        level_view = LevelSelectView(self.screen_width, self.screen_height, None)
-        self.window.show_view(level_view)
-
     def on_draw(self):
         self.clear()
-        arcade.draw_texture_rectangle(
-            self.screen_width // 2, self.screen_height // 2,
-            self.screen_width, self.screen_height,
-            self.background
-        )
         self.manager.draw()
-        credits_text = [
-            "Programmed by Steven Finnell and Harrison Wallace.",
-            "Built-In resources provided by the Arcade module.",
-            "Other assets used credit to XXX"
-        ]
-        y = 500
-        for line in credits_text:
-            arcade.draw_text(line, 300, y, arcade.color.WHITE, 14)
-            y -= 20  # Adjust the vertical position for the next line
+
+    def on_click_restart(self, event):
+        from .level_select import LevelSelectView
+        from . import values
+        values.hide_boss = []
+        level_view = LevelSelectView(self.screen_width, self.screen_height, values.hide_boss)
+        self.window.show_view(level_view)
+
+    def on_click_exit(self, event):
+        arcade.close_window()

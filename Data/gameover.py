@@ -53,7 +53,9 @@ class GameOverView(arcade.View):
 
     def on_click_restart(self, event):
         from .level_select import LevelSelectView
-        level_view = LevelSelectView(self.screen_width, self.screen_height)
+        from . import values
+        values.hide_boss = []
+        level_view = LevelSelectView(self.screen_width, self.screen_height, values.hide_boss)
         self.window.show_view(level_view)
 
     def on_click_exit(self, event):

@@ -83,11 +83,10 @@ class Reaver(Enemy):
 
         self.shoot_interval = 1
         self.shoot_timer = 0
-        self.shoot_delay = 0 #Number used to delay the enmy from shooting for certain reasons (i.e. jumping)  
+        self.shoot_delay = 0 #Number used to delay the enemy from shooting for certain reasons (i.e. jumping)  
 
         self.shoot_sound = arcade.load_sound(':resources:sounds/laser2.wav')
 
-    # Just put in the default enemy behavior code as a placeholder
     def move(self, player_sprite, time):
         # Position the start at the enemy's current location
         start_x = self.center_x
@@ -163,20 +162,110 @@ class Onslaught(Enemy):
 
         self.physics_engine = physics_engine
 
+        self.hit_sound = arcade.load_sound(':resources:sounds/hit1.wav')
+        self.death_sound = arcade.load_sound(':resources:sounds/explosion2.wav')
+
     def move(self, player_sprite, timer):
         print("No movement")
 
 
 #Bulwark boss
 class Bulwark(Enemy):
-    def __init__(self, health, speed, physics_engine):
+    def __init__(self, health, speed, physics_engine, screen_width, screen_height):
         Enemy.__init__(self, health, speed, physics_engine)
         arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_green.png", 1.3)
 
+        self.health = health
+        self.speed = speed
+        self.screen_width = screen_width
+        self.screen_height = screen_height
         self.physics_engine = physics_engine
+
+        self.hit_sound = arcade.load_sound(':resources:sounds/hit1.wav')
+        self.death_sound = arcade.load_sound(':resources:sounds/explosion2.wav')
+
+        self.physics_engine = physics_engine
+
+        self.ram_interval = 2
+        self.ram_timer = 0
+        self.ram_delay = 1
+        self.pause_inerval = 1
+        self.speed_boost = 6.0 #Multiplicative
+        self.charging = False
+
+        self.stored_player_x = 0
+        self.stored_player_y = 0
+        self.speed_original = self.speed
         
-    def move(self, player_sprite, timer):
-        print("No movement")
+    def move(self, player_sprite, time):
+        # Position the start at the enemy's current location
+        start_x = self.center_x
+        start_y = self.center_y
+
+        self.ram_timer += time
+
+        if self.ram_timer >= self.ram_interval + self.ram_delay and not self.charging:
+            self.stored_player_x = player_sprite.center_x
+            self.stored_player_y = player_sprite.center_y
+            self.charging = True
+            self.speed_original = self.speed
+            self.speed *= self.speed_boost
+
+        if self.charging:
+            dest_x = self.stored_player_x
+            dest_y = self.stored_player_y
+        else:
+            dest_x = player_sprite.center_x
+            dest_y = player_sprite.center_y
+
+        # Do math to calculate how to get the bullet to the destination.
+        # Calculation the angle in radians between the start points
+        # and end points. This is the angle the bullet will travel.
+        x_diff = dest_x - start_x
+        y_diff = dest_y - start_y
+        angle = math.atan2(y_diff, x_diff)
+
+        # Set the enemy to face the player.
+        self.angle = math.degrees(angle) - 90
+
+        if not self.charging:
+            if self.center_y < player_sprite.center_y:
+                self.center_y += min(self.speed, player_sprite.center_y - self.center_y)
+            elif self.center_y > player_sprite.center_y:
+                self.center_y -= min(self.speed, self.center_y - player_sprite.center_y)
+            if self.center_x < player_sprite.center_x:
+                self.center_x += min(self.speed, player_sprite.center_x - self.center_x)
+            elif self.center_x > player_sprite.center_x:
+                self.center_x -= min(self.speed, self.center_x - player_sprite.center_x)
+        else:
+            if abs(self.center_x - self.stored_player_x) <= 20 and abs(self.center_y - self.stored_player_y) <= 20:
+                self.charging = False
+                self.ram_timer = 0
+                self.speed = self.speed_original
+            else:
+                # How far are we?
+                distance = math.sqrt((self.center_x - dest_x) ** 2 + (self.center_y - dest_y) ** 2)
+                self.center_x = start_x
+                self.center_y = start_y
+                speed = min(self.speed, distance)
+                self.change_x = math.cos(angle) * speed
+                self.change_y = math.sin(angle) * speed
+
+        if self.right > self.screen_width:
+            self.right = self.screen_width
+            self.change_x = 0 # Zero x speed
+        elif self.left < 0:
+            self.left = 0
+            self.change_x = 0
+        if self.bottom < 0:
+            self.bottom = 0
+            self.change_y = 0
+        elif self.top > self.screen_height:
+            self.top = self.screen_height
+            self.change_y = 0
+
+        self.physics_engine.sprites[self].body.position = (self.center_x, self.center_y)
+        self.physics_engine.sprites[self].body.angle = self.angle
 
 
 #Sunbeam boss
@@ -186,6 +275,9 @@ class Sunbeam(Enemy):
         arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_green.png", 1.3)
 
         self.physics_engine = physics_engine
+
+        self.hit_sound = arcade.load_sound(':resources:sounds/hit1.wav')
+        self.death_sound = arcade.load_sound(':resources:sounds/explosion2.wav')
 
     def move(self, player_sprite, timer):
         print("No movement")
