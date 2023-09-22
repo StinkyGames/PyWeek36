@@ -34,7 +34,6 @@ class GameView(arcade.View):
         self.enemy_list = arcade.SpriteList()
         self.enemy_bullet_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
-        self.level = LevelSelectView(self.screen_width, self.screen_height)
 
         self.spawn_timer = 0  # Timer to control drone spawning
         self.spawn_interval = 1  # Time in seconds between drone spawns
