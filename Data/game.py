@@ -38,7 +38,7 @@ class GameView(arcade.View):
         self.spawn_timer = 0  # Timer to control drone spawning
         self.spawn_interval = 1  # Time in seconds between drone spawns
         self.kill_count = 0
-        self.max_kills = 10
+        self.max_kills = 5
         self.boss_spawned = False
         
         damping = 0.5
@@ -48,7 +48,7 @@ class GameView(arcade.View):
         self.player = Player(self.screen_width, self.screen_height, self.physics_engine)
 
         if self.boss == "Bulwark":
-            self.boss_class = Bulwark(10, 1, self.physics_engine, self.screen_width, self.screen_height)
+            self.boss_class = Bulwark(10, 1, self.physics_engine)
         elif self.boss == "Reaver":
             self.boss_class = Reaver(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
         elif self.boss == "Onslaught":
