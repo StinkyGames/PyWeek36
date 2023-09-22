@@ -48,7 +48,7 @@ class GameView(arcade.View):
         self.player = Player(self.screen_width, self.screen_height, self.physics_engine)
 
         if self.boss == "Bulwark":
-            self.boss_class = Bulwark(10, 1, self.physics_engine)
+            self.boss_class = Bulwark(10, 1, self.physics_engine, self.screen_width, self.screen_height)
         elif self.boss == "Reaver":
             self.boss_class = Reaver(10, 1, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
         elif self.boss == "Onslaught":
