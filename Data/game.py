@@ -38,7 +38,7 @@ class GameView(arcade.View):
         self.spawn_timer = 0  # Timer to control drone spawning
         self.spawn_interval = 1  # Time in seconds between drone spawns
         self.kill_count = 0
-        self.max_kills = 5
+        self.max_kills = 10
         self.boss_spawned = False
         
         damping = 0.5
