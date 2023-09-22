@@ -43,7 +43,7 @@ class InstructionsView(arcade.View):
 
     def on_click_continue(self, event):
         from .level_select import LevelSelectView
-        level_view = LevelSelectView(self.screen_width, self.screen_height)
+        level_view = LevelSelectView(self.screen_width, self.screen_height, None)
         self.window.show_view(level_view)
 
     def on_draw(self):

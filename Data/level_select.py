@@ -1,7 +1,7 @@
 import arcade, arcade.gui
 
 class LevelSelectView(arcade.View):
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, hide_boss):
         super().__init__()
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -15,9 +15,9 @@ class LevelSelectView(arcade.View):
 
         self.background = arcade.load_texture('Assets/Menu.png')
 
-    def on_show_view(self):
-        arcade.set_background_color(arcade.color.DARK_GRAY)
+        self.hide_boss = hide_boss
 
+    def on_show_view(self):
         red_style = {
             "font_name": ("calibri", "arial"),
             "font_size": 15,
@@ -50,6 +50,15 @@ class LevelSelectView(arcade.View):
         self.v_box.add(reaver_button)
         self.v_box.add(bulwark_button)
         self.v_box.add(sunbeam_button)
+        from . import values
+        if "Onslaught" in values.hide_boss:
+            self.v_box.remove(onslaught_button)
+        if "Reaver" in values.hide_boss:
+            self.v_box.remove(reaver_button)
+        if "Bulwark" in values.hide_boss:
+            self.v_box.remove(bulwark_button)
+        if "Sunbeam" in values.hide_boss:
+            self.v_box.remove(sunbeam_button)
         self.v_box.add(exit_button)
 
         self.manager.add(arcade.gui.UIAnchorWidget(anchor_x="center_x", anchor_y="center_y", child=self.v_box))
