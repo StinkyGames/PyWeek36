@@ -6,16 +6,16 @@ This game uses the Arcade library and has only been tested in Windows but should
 
 You are a ship stranded in enemy space and must destroy drones to charge your dark matter drive. The sectors are protected by boss ships which must be defeated before moving on to the next area. 
 
-Colliding with drones will destroy them but damage your hull. Colliding with a boss will instantly destroy you.
+Colliding with drones will destroy them but damage your hull. Colliding with a boss will instantly destroy you. You can engage the bosses in any order.
 
 ## Controls
 
 Use the WSAD keys to move and mouse left-click to shoot.
 
 # Screenshots
-[Screenshots](/screenshots)
+[Screenshots](/Screenshots)
 
-![Alt text](/screenshots/v0-6-0_1.png?raw=true "Gameplay")
+![Alt text](/Screenshots/v0-6-0_1.png?raw=true "Gameplay")
 
 # Requirements
 [Requirements](requirements.txt)
