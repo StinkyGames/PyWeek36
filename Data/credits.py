@@ -57,9 +57,13 @@ class CreditsView(arcade.View):
         credits_text = [
             "Programmed by Steven Finnell and Harrison Wallace.",
             "Built-In resources provided by the Arcade module.",
-            "Other assets used credit to XXX"
+            "Other assets used credit to Screaming Brain Studios.",
+            "See README for more."
         ]
         y = 500
         for line in credits_text:
-            arcade.draw_text(line, 300, y, arcade.color.WHITE, 14)
-            y -= 20  # Adjust the vertical position for the next line
+            # Center the text
+            text_width = len(line) * 14
+            x = (self.screen_width - text_width) // 2 + 100
+            arcade.draw_text(line, x, y, arcade.color.WHITE, 14)
+            y -= 20

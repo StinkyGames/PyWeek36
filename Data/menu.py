@@ -1,10 +1,11 @@
 import arcade, arcade.gui
 
 class MenuView(arcade.View):
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, game_title):
         super().__init__()
         self.screen_width = screen_width
         self.screen_height = screen_height
+        self.title = game_title
 
         self.window.set_mouse_visible(True)
         self.window.set_location(int((arcade.get_display_size()[0] - screen_width) / 2),
@@ -47,7 +48,7 @@ class MenuView(arcade.View):
 
         self.v_box = arcade.gui.UIBoxLayout(space_between=20)
 
-        title_label = arcade.gui.UILabel(text="Dark Matter", width=400, height=50, font_size=18, font_name=("calibri", "arial"), text_color=arcade.color.WHITE, align="center")
+        title_label = arcade.gui.UILabel(text=f'{self.title}', width=400, height=50, font_size=18, font_name=("calibri", "arial"), text_color=arcade.color.WHITE, align="center")
         start_button = arcade.gui.UIFlatButton(text="Start", width=200, style=red_style)
         instructions_button = arcade.gui.UIFlatButton(text="Instructions", width=200, style=red_style)
         credits_button = arcade.gui.UIFlatButton(text="Credits", width=200, style=red_style)

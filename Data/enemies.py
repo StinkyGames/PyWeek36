@@ -1,5 +1,4 @@
 import arcade, random, math
-from .player import Bullet
 
 #Enemy class that serves as base class for all enemies
 class Enemy(arcade.Sprite):
@@ -7,6 +6,13 @@ class Enemy(arcade.Sprite):
         self.health = health
         self.speed = speed
         self.physics_engine = physics_engine
+
+class EnemyBullet(arcade.Sprite):
+    def __init__(self):
+        super().__init__(':resources:images/space_shooter/laserRed01.png')
+        # set initial values
+        self.speed = 10
+        self.scale = 1
 
 #Generic drone enemy
 class Drone(Enemy):
@@ -54,7 +60,7 @@ class Drone(Enemy):
 class Reaver(Enemy):
     def __init__(self, health, speed, physics_engine, screen_width, screen_height, enemy_bullet_list):
         Enemy.__init__(self, health, speed, physics_engine)
-        arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_green.png", 1.3)
+        arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip2_orange.png", 1.3)
 
         self.health = health
         self.speed = speed
@@ -65,7 +71,7 @@ class Reaver(Enemy):
 
         position_offset = 100 #This offset used to pad the jump point locations so that enemy doesn't clip outside of play area
 
-        self.jump_interval = 7 #Time in seconds between jump to cardinal points
+        self.jump_interval = 3.5 #Time in seconds between jump to cardinal points
         self.jump_timer = 0
         self.move_point_incrementor = 0
 
@@ -81,7 +87,7 @@ class Reaver(Enemy):
 
         self.jump_sound = arcade.load_sound(':resources:sounds/fall3.wav')
 
-        self.shoot_interval = 1
+        self.shoot_interval = 0.5
         self.shoot_timer = 0
         self.shoot_delay = 0 #Number used to delay the enemy from shooting for certain reasons (i.e. jumping)  
 
@@ -117,21 +123,20 @@ class Reaver(Enemy):
 
         self.jump_timer += time
         if self.jump_timer >= self.jump_interval:
-            if(self.move_point_incrementor == 0):
-                self.center_x = self.move_points[2][0] #Set new x
-                self.center_y = self.move_points[2][1] #Set new y
-                self.move_point_incrementor += 1
-            elif(self.move_point_incrementor == 1):
-                self.center_x = self.move_points[3][0] #Set new x
-                self.center_y = self.move_points[3][1] #Set new y
-                self.move_point_incrementor += 1
-            elif(self.move_point_incrementor == 2):
-                self.center_x = self.move_points[0][0] #Set new x
-                self.center_y = self.move_points[0][1] #Set new y
-                self.move_point_incrementor += 1
-            elif(self.move_point_incrementor == 3):
-                self.center_x = self.move_points[1][0] #Set new x
-                self.center_y = self.move_points[1][1] #Set new y
+            if self.move_point_incrementor == 0:
+                self.center_x = self.move_points[2][0]
+                self.center_y = self.move_points[2][1]
+            elif self.move_point_incrementor == 1:
+                self.center_x = self.move_points[3][0]
+                self.center_y = self.move_points[3][1]
+            elif self.move_point_incrementor == 2:
+                self.center_x = self.move_points[0][0]
+                self.center_y = self.move_points[0][1]
+            elif self.move_point_incrementor == 3:
+                self.center_x = self.move_points[1][0]
+                self.center_y = self.move_points[1][1]
+            self.move_point_incrementor += 1
+            if self.move_point_incrementor > 3:
                 self.move_point_incrementor = 0
             arcade.play_sound(self.jump_sound)
             self.jump_timer = 0 #Reset timer
@@ -139,7 +144,7 @@ class Reaver(Enemy):
 
         self.shoot_timer += time
         if self.shoot_timer >= self.shoot_interval + self.shoot_delay:
-            bullet = Bullet()
+            bullet = EnemyBullet()
             bullet.center_x = start_x
             bullet.center_y = start_y
             bullet.angle = math.degrees(angle)
@@ -158,7 +163,7 @@ class Reaver(Enemy):
 class Onslaught(Enemy):
     def __init__(self, health, speed, physics_engine, screen_width, screen_height, enemy_bullet_list):
         Enemy.__init__(self, health, speed, physics_engine)
-        arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_green.png", 1.3)
+        arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_orange.png", 1.3)
 
         self.physics_engine = physics_engine
         self.screen_width = screen_width
@@ -172,7 +177,7 @@ class Onslaught(Enemy):
 
         self.enemy_bullet_list = enemy_bullet_list
 
-        self.shoot_interval = 0.8
+        self.shoot_interval = 0.3
         self.shoot_timer = 0
         self.shoot_sound = arcade.load_sound(':resources:sounds/laser2.wav')
 
@@ -218,7 +223,7 @@ class Onslaught(Enemy):
 
         self.shoot_timer += time
         if self.shoot_timer >= self.shoot_interval:
-            bullet = Bullet()
+            bullet = EnemyBullet()
             bullet.center_x = start_x
             bullet.center_y = start_y
             bullet.angle = math.degrees(angle)
@@ -238,7 +243,7 @@ class Onslaught(Enemy):
 class Bulwark(Enemy):
     def __init__(self, health, speed, physics_engine, screen_width, screen_height):
         Enemy.__init__(self, health, speed, physics_engine)
-        arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_green.png", 1.3)
+        arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip3_orange.png", 1.3)
 
         self.health = health
         self.speed = speed
@@ -251,11 +256,10 @@ class Bulwark(Enemy):
 
         self.physics_engine = physics_engine
 
-        self.ram_interval = 2
         self.ram_timer = 0
-        self.ram_delay = 1
-        self.pause_inerval = 1
-        self.speed_boost = 6.0 #Multiplicative
+        self.ram_interval = 1.5 # Ram frequency
+        self.ram_delay = 0.5 # Ram cooldown
+        self.speed_boost = 20 #Multiplicative
         self.charging = False
 
         self.stored_player_x = 0

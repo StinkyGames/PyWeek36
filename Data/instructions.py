@@ -55,11 +55,16 @@ class InstructionsView(arcade.View):
         )
         self.manager.draw()
         instructions_text = [
-            "WSAD to move.",
-            "Left click for primary attack.",
-            "Placeholder"
+            "Use the WSAD keys to move.",
+            "Use left mouse click to fire weapon.",
+            "Kill drones to recharge your dark matter drive.",
+            "Kill the boss to jump to the next sector.",
+            "Defeat all four bosses to win!"
         ]
         y = 500
         for line in instructions_text:
-            arcade.draw_text(line, 300, y, arcade.color.WHITE, 14)
-            y -= 20  # Adjust the vertical position for the next line
+            # Center the text
+            text_width = len(line) * 14
+            x = (self.screen_width - text_width) // 2 + 100
+            arcade.draw_text(line, x, y, arcade.color.WHITE, 14)
+            y -= 20

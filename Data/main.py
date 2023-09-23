@@ -4,11 +4,11 @@ from .menu import MenuView
 
 screen_width = 1024
 screen_height = 768
-game_title = 'Dark Matter'
+game_title = 'Dark Matter X'
 
 def main():
     window = arcade.Window(screen_width, screen_height, game_title)
-    menu_view = MenuView(screen_width, screen_height)
+    menu_view = MenuView(screen_width, screen_height, game_title)
     window.show_view(menu_view)
     arcade.run()
 
