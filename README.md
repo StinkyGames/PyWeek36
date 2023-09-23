@@ -15,7 +15,7 @@ Use the WSAD keys to move and mouse left-click to shoot.
 # Screenshots
 [Screenshots](/Screenshots)
 
-![Alt text](/Screenshots/v0-6-0_1.png?raw=true "Gameplay")
+![Alt text](/Screenshots/Boss.png?raw=true "Boss Fight")
 
 # Requirements
 [Requirements](requirements.txt)
