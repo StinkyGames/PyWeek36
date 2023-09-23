@@ -59,7 +59,7 @@ class InstructionsView(arcade.View):
             "Use left mouse click to fire weapon.",
             "Kill drones to recharge your dark matter drive.",
             "Kill the boss to jump to the next sector.",
-            "Defeat all four bosses to win!"
+            "Defeat all the bosses to win!"
         ]
         y = 500
         for line in instructions_text:

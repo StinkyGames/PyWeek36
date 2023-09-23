@@ -36,20 +36,17 @@ class LevelSelectView(arcade.View):
         onslaught_button = arcade.gui.UIFlatButton(text="Onslaught", width=200, style=red_style)
         reaver_button = arcade.gui.UIFlatButton(text="Reaver", width=200, style=red_style)
         bulwark_button = arcade.gui.UIFlatButton(text="Bulwark", width=200, style=red_style)
-        sunbeam_button = arcade.gui.UIFlatButton(text="Sunbeam", width=200, style=red_style)
         exit_button = arcade.gui.UIFlatButton(text="Exit", width=200, style=red_style)
 
         onslaught_button.on_click = self.on_click_onslaught
         reaver_button.on_click = self.on_click_reaver
         bulwark_button.on_click = self.on_click_bulwark
-        sunbeam_button.on_click = self.on_click_sunbeam
         exit_button.on_click = self.on_click_exit
 
         self.v_box.add(title_label)
         self.v_box.add(onslaught_button)
         self.v_box.add(reaver_button)
         self.v_box.add(bulwark_button)
-        self.v_box.add(sunbeam_button)
         # Remove boss choices if they exist in the dictionary that is defined from game.py when killing a boss
         from . import values
         if "Onslaught" in values.hide_boss:
@@ -58,11 +55,9 @@ class LevelSelectView(arcade.View):
             self.v_box.remove(reaver_button)
         if "Bulwark" in values.hide_boss:
             self.v_box.remove(bulwark_button)
-        if "Sunbeam" in values.hide_boss:
-            self.v_box.remove(sunbeam_button)
         self.v_box.add(exit_button)
         # Take you to the winner screen if all boss names exist in the dictionary
-        if all(boss in values.hide_boss for boss in ["Onslaught", "Reaver", "Bulwark", "Sunbeam"]):
+        if all(boss in values.hide_boss for boss in ["Onslaught", "Reaver", "Bulwark"]):
             from .winner import WinView
             win_view = WinView(self.screen_width, self.screen_height)
             self.window.show_view(win_view)
@@ -85,11 +80,6 @@ class LevelSelectView(arcade.View):
     def on_click_bulwark(self, event):
         from .game import GameView
         game_view = GameView(self.screen_width, self.screen_height,boss="Bulwark")
-        self.window.show_view(game_view)
-
-    def on_click_sunbeam(self, event):
-        from .game import GameView
-        game_view = GameView(self.screen_width, self.screen_height,boss="Sunbeam")
         self.window.show_view(game_view)
     
     def on_click_exit(self, event):

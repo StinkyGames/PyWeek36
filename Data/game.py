@@ -59,9 +59,6 @@ class GameView(arcade.View):
         elif self.boss == "Onslaught":
             self.boss_class = Onslaught(50, 4, self.physics_engine, self.screen_width, self.screen_height, self.enemy_bullet_list)
             self.boss_max_health = self.boss_class.health
-        elif self.boss == "Sunbeam":
-            self.boss_class = Sunbeam(50, 1, self.physics_engine)
-            self.boss_max_health = self.boss_class.health
 
         #Found this code at https://api.arcade.academy/en/latest/examples/pymunk_demo_top_down.html#pymunk-demo-top-down
         self.physics_engine.add_sprite(self.player, collision_type="player")

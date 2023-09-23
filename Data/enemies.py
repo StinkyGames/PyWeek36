@@ -167,7 +167,7 @@ class Onslaught(Enemy):
 
         self.physics_engine = physics_engine
         self.screen_width = screen_width
-        self.scree_height = screen_height
+        self.screen_height = screen_height
         self.hit_sound = arcade.load_sound(':resources:sounds/hit1.wav')
         self.death_sound = arcade.load_sound(':resources:sounds/explosion2.wav')
 
@@ -335,21 +335,3 @@ class Bulwark(Enemy):
 
         self.physics_engine.sprites[self].body.position = (self.center_x, self.center_y)
         self.physics_engine.sprites[self].body.angle = self.angle
-
-
-#Sunbeam boss
-class Sunbeam(Enemy):
-    def __init__(self, health, speed, physics_engine):
-        Enemy.__init__(self, health, speed, physics_engine)
-        arcade.Sprite.__init__(self, ":resources:images/space_shooter/playerShip1_green.png", 1.3)
-
-        self.physics_engine = physics_engine
-
-        self.hit_sound = arcade.load_sound(':resources:sounds/hit1.wav')
-        self.death_sound = arcade.load_sound(':resources:sounds/explosion2.wav')
-
-    def move(self, player_sprite, timer):
-        print("No movement")
-
-
-
